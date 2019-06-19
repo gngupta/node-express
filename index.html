@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="jumbotron mt-2">
+            <h1 class="display-4">Send Message</h1>
+            <fieldset class="mt-3">
+                <input id="name" class="form-control" placeholder="Name">
+            </fieldset>
+            <fieldset class="mt-3">
+                <input id="message" class="form-control" placeholder="Message">
+            </fieldset>
+            <fieldset class="mt-4">
+                <button id="send-message" class="btn btn-success">Send</button>
+            </fieldset>
+        </div>
+
+        <div class="jumbotron">
+            <h2 class="display-8">Sent Messages</h1>
+                <fieldset id="sent-messages" class="mt-4"></fieldset>
+        </div>
+    </div>
+
+</body>
+
+
+<script>
+    function getMessages() {
+        $.get("http://localhost:3000/messages", (data) => {
+            $('#sent-messages').html('')
+            data.forEach(element => {
+                $('#sent-messages').append(`<h4> ${element.name} </h4><p> ${element.message} </p>`);
+            });
+        })
+    }
+
+    function postMessage(message) {
+        $.post("http://localhost:3000/message", message).done(getMessages());
+    }
+
+    $(() => {
+        /** Populate on load.*/
+        getMessages();
+
+        /** Bind event to button. */
+        $('#send-message').click(() => {
+            var message = {
+                name: $('#name').val(),
+                message: $('#message').val()
+            }
+            postMessage(message)
+        })
+    })
+</script>
+
+</html>
