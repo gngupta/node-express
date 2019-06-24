@@ -16,6 +16,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
+    <script src="/socket.io/socket.io.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -43,6 +44,7 @@
 
 
 <script>
+    var socket = io()
     function getMessages() {
         $.get("http://localhost:3000/messages", (data) => {
             $('#sent-messages').html('')
