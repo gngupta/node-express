@@ -37,31 +37,28 @@ app.get("/messages", (req, res) => {
     })
 })
 
-app.post("/message", (req, res) => {
-    var message = new Message(req.body)
-    message.save()
-        .then(() => {
-            console.log("Message saved in db")
-            return Message.findOne({
-                message: 'badword'
+app.post("/message", async (req, res) => {
+    try {
+        var message = new Message(req.body)
+        var savedMessage = await message.save()
+        console.log("Message saved in db")
+        var censored = await Message.findOne({
+            message: 'badword'
+        })
+        if (censored) {
+            await Message.deleteOne({
+                _id: censored.id
             })
-        })
-        .then((censored) => {
-            if (censored) {
-                console.log("Found censored word :: ", censored)
-                return Message.deleteOne({
-                    _id: censored.id
-                })
-            } else {
-                io.emit('message', req.body)
-                res.sendStatus(200)
-            }
-        })
-        .catch((err) => {
-            console.log("Failed to save in mongo db")
-            res.sendStatus(500)
-            return console.err(err)
-        })
+        } else {
+            io.emit('message', req.body)
+        }
+        res.sendStatus(200)
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(500)
+    } finally {
+        console.log("process completed")
+    }
 })
 
 io.on("connection", (socket) => {
