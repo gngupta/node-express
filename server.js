@@ -39,15 +39,29 @@ app.get("/messages", (req, res) => {
 
 app.post("/message", (req, res) => {
     var message = new Message(req.body)
-    message.save((err) => {
-        if (err) {
+    message.save()
+        .then(() => {
+            console.log("Message saved in db")
+            return Message.findOne({
+                message: 'badword'
+            })
+        })
+        .then((censored) => {
+            if (censored) {
+                console.log("Found censored word :: ", censored)
+                return Message.deleteOne({
+                    _id: censored.id
+                })
+            } else {
+                io.emit('message', req.body)
+                res.sendStatus(200)
+            }
+        })
+        .catch((err) => {
             console.log("Failed to save in mongo db")
             res.sendStatus(500)
-        } else {
-            io.emit('message', req.body)
-            res.sendStatus(200)
-        }
-    })
+            return console.err(err)
+        })
 })
 
 io.on("connection", (socket) => {
