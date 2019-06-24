@@ -45,17 +45,21 @@
 
 <script>
     var socket = io()
+    socket.on('message', addMessage)
+
+    function addMessage(message){
+        $('#sent-messages').append(`<h4> ${message.name} </h4><p> ${message.message} </p>`);
+    }
+
     function getMessages() {
         $.get("http://localhost:3000/messages", (data) => {
             $('#sent-messages').html('')
-            data.forEach(element => {
-                $('#sent-messages').append(`<h4> ${element.name} </h4><p> ${element.message} </p>`);
-            });
+            data.forEach(addMessage)
         })
     }
 
     function postMessage(message) {
-        $.post("http://localhost:3000/message", message).done(getMessages());
+        $.post("http://localhost:3000/message", message)
     }
 
     $(() => {
