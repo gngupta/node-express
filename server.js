@@ -37,6 +37,18 @@ app.get("/messages", (req, res) => {
     })
 })
 
+app.get("/messages/:user", (req, res) => {
+    Message.find({
+        name: req.params.user
+    }, (err, messages) => {
+        if (err) {
+            console.log("Error occured while finding messages from mongo db")
+        } else {
+            res.send(messages)
+        }
+    })
+})
+
 app.post("/message", async (req, res) => {
     try {
         var message = new Message(req.body)
